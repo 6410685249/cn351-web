@@ -1,0 +1,23 @@
+{
+  "name": "myweb",
+  "version": "1.0.0",
+  "description": "This website is for practice hacking.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./server.js",
+    "dev": "nodemon ./server.js"
+  },
+  "author": "Group10",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "hbs": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "nodemon": "^3.1.0"
+  },
+  "nodemonConfig": {
+    "ext": "js,mjs,cjs,json,hbs,css"
+  }
+}

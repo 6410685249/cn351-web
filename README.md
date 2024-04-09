@@ -23,7 +23,7 @@ npm install
 npm run start
 ```
 
-### Run as Development
+### Run as Developer
 ```
 npm run dev
 ```

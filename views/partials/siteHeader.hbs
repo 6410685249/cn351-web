@@ -1,10 +1,17 @@
 <header>
     <div>
         <a href="/">
-            <span>Troll</span>
+            <span>Nothing</span>
         </a>
     </div>
+
     <div>
         <a href="/about">About</a>
     </div>
+
+    {{#if user }}
+        <div>
+            <a href="/profile">Profile</a>
+        </div>
+    {{/if}}
 </header>

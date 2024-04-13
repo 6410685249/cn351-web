@@ -5,9 +5,13 @@
     {{> siteHeader }}
     <h1>Your Profile</h1>
     <form action="/profile" method="post" enctype="multipart/form-data" class="profile-picture">
-        <input type="file" name="avatar" accept="image/*">
+        <input type="file" name="file">
         <button type="submit">Save</button>
     </form>
+
+    {{#if message}}
+        <p>{{ message }}</p>
+    {{/if}}
     {{> siteFooter }}
 </body>
 </html>

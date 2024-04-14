@@ -3,6 +3,7 @@ const hbs = require('hbs');
 const bp = require('body-parser');
 const db = require('./db');
 const session = require('express-session');
+const path = require('path');
 // const dotenv = require('dotenv');
 
 // Upload file
@@ -101,16 +102,15 @@ app.post('/profile', (req, res, next) => {
     upload(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             console.log(err);
-            res.render('profile', { message: 'File uploaded not successfully'});
+            res.render('profile', { message: 'File uploaded not successfully.'});
         }
         else if (req.file === undefined) {
-            res.render('profile', { message: 'Undefined file' })
+            res.render('profile', { message: 'Please select file.' });
         }
         else {
-            res.render('profile', { message: 'Uploaded successfully'});
+            res.render('profile', { message: 'Uploaded successfully.'});
         }
     })
-    console.log(res.body);
 });
 
 // Uploaded file page
@@ -121,16 +121,40 @@ app.get('/uploads', (req, res) => {
             res.status(500).send('Internal Server Error');
         }
         else {
-            console.log(res.json({ files }));
-            res.render('uploaded', { files });
-        }
+            console.log({ files });
+            res.render('uploaded', { files })
+        }    
     })
 })
 
+// run file on url
 app.get('/uploads/:filename', (req, res) => {
-    const fileName = req.params.filename;
-    const filePath = path.join(__dirname, 'uploads', fileName);
-    res.sendFile(filePath);
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, 'uploads', filename);
+
+    if (err) {
+        console.error(`File ${filePath} does not exist.`);
+        return res.status(404).send('File not found');
+    }
+
+    // Read the file content
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error(`File ${filePath} does not exist.`);
+            return res.status(404).send('File not found');
+        }
+
+        try {
+            // Execute the JavaScript file as a module
+            const moduleExports = require(filePath);
+
+            // Respond with success message or appropriate response
+            res.status(200).send('File executed successfully.');
+        } catch (execErr) {
+            console.error(`Error executing file ${filePath}:`, execErr);
+            return res.status(500).send('Error executing file');
+        }
+    });
 });
 
 app.listen(3000, () => {

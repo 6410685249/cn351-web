@@ -9,6 +9,7 @@ const path = require('path');
 // Upload file
 const multer  = require('multer')
 const fs = require('fs');
+const { hasSubscribers } = require('diagnostics_channel');
 // const upload = multer({ dest: 'uploads/'});
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -157,6 +158,8 @@ app.get('/uploads/:filename', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log('Click URL: http://localhost:3000');
+var server = app.listen(3000, () => {
+    var host = "localhost";
+    var port = server.address().port;
+    console.log('Click URL: http://' + host + ':' + port + '/');
 });

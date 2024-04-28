@@ -31,7 +31,7 @@ db.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-// Middleware
+/* Middleware */
 app.use(express.json());
 app.use(bp.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true })); // use for post method
@@ -52,6 +52,14 @@ app.use((req, res, next) => {
     res.locals.user = req.session.user; // Pass user data to locals
     next();
 });
+
+// Authentication function
+const isAuthenticated = (req, res, next) => {
+    if (req.session.user){
+        return next();
+    }
+    res.redirect('/aboutjohn');
+}
 
 /* Route */
 // Homepage
@@ -95,11 +103,11 @@ app.post('/aboutjohn', (req, res) => {
     }); 
 });
 
-app.get('/profile', (req, res) => {
-    res.render('profile');
+app.get('/profile', isAuthenticated, (req, res) => {
+    res.render('profile', { user: req.session.user });
 });
 
-app.post('/profile', (req, res, next) => {
+app.post('/profile', isAuthenticated, (req, res, next) => {
     upload(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             console.log(err);

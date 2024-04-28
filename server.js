@@ -4,6 +4,7 @@ const bp = require('body-parser');
 const db = require('./db');
 const session = require('express-session');
 const path = require('path');
+const { spawn } = require('child_process');
 // const dotenv = require('dotenv');
 
 // Upload file
@@ -141,29 +142,60 @@ app.get('/uploads/:filename', (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(__dirname, 'uploads', filename);
 
-    if (err) {
-        console.error(`File ${filePath} does not exist.`);
-        return res.status(404).send('File not found');
-    }
-
-    // Read the file content
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             console.error(`File ${filePath} does not exist.`);
             return res.status(404).send('File not found');
         }
 
-        try {
-            // Execute the JavaScript file as a module
-            const moduleExports = require(filePath);
-
-            // Respond with success message or appropriate response
-            res.status(200).send('File executed successfully.');
-        } catch (execErr) {
-            console.error(`Error executing file ${filePath}:`, execErr);
-            return res.status(500).send('Error executing file');
+        // Whitelist specific files or directories if necessary
+        // Example: restrict execution to files in a specific directory
+        if (!filePath.startsWith(path.join(__dirname, 'uploads'))) {
+            console.error(`Access to file ${filePath} is not allowed.`);
+            return res.status(403).send('Forbidden');
         }
+
+        // Execute the file using child_process.spawn
+        const child = spawn('node', [filePath]);
+
+        // Capture stdout and stderr
+        child.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+
+        child.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+
+        child.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            res.status(200).send(`File executed with code ${code}`);
+        });
     });
+
+    // if (err) {
+    //     console.error(`File ${filePath} does not exist.`);
+    //     return res.status(404).send('File not found');
+    // }
+
+    // // Read the file content
+    // fs.access(filePath, fs.constants.F_OK, (err) => {
+    //     if (err) {
+    //         console.error(`File ${filePath} does not exist.`);
+    //         return res.status(404).send('File not found');
+    //     }
+
+    //     try {
+    //         // Execute the JavaScript file as a module
+    //         const moduleExports = require(filePath);
+
+    //         // Respond with success message or appropriate response
+    //         res.status(200).send('File executed successfully.');
+    //     } catch (execErr) {
+    //         console.error(`Error executing file ${filePath}:`, execErr);
+    //         return res.status(500).send('Error executing file');
+    //     }
+    // });
 });
 
 var server = app.listen(3000, () => {

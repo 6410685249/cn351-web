@@ -138,40 +138,40 @@ app.get('/uploads', (req, res) => {
 })
 
 // run file on url
-app.get('/uploads/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(__dirname, 'uploads', filename);
+// app.get('/uploads/:filename', (req, res) => {
+//     const filename = req.params.filename;
+//     const filePath = path.join(__dirname, 'uploads', filename);
 
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            console.error(`File ${filePath} does not exist.`);
-            return res.status(404).send('File not found');
-        }
+//     fs.access(filePath, fs.constants.F_OK, (err) => {
+//         if (err) {
+//             console.error(`File ${filePath} does not exist.`);
+//             return res.status(404).send('File not found');
+//         }
 
-        // Whitelist specific files or directories if necessary
-        // Example: restrict execution to files in a specific directory
-        if (!filePath.startsWith(path.join(__dirname, 'uploads'))) {
-            console.error(`Access to file ${filePath} is not allowed.`);
-            return res.status(403).send('Forbidden');
-        }
+//         // Whitelist specific files or directories if necessary
+//         // Example: restrict execution to files in a specific directory
+//         if (!filePath.startsWith(path.join(__dirname, 'uploads'))) {
+//             console.error(`Access to file ${filePath} is not allowed.`);
+//             return res.status(403).send('Forbidden');
+//         }
 
-        // Execute the file using child_process.spawn
-        const child = spawn('node', [filePath]);
+//         // Execute the file using child_process.spawn
+//         const child = spawn('node', [filePath]);
 
-        // Capture stdout and stderr
-        child.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
+//         // Capture stdout and stderr
+//         child.stdout.on('data', (data) => {
+//             console.log(`stdout: ${data}`);
+//         });
 
-        child.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
-        });
+//         child.stderr.on('data', (data) => {
+//             console.error(`stderr: ${data}`);
+//         });
 
-        child.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-            res.status(200).send(`File executed with code ${code}`);
-        });
-    });
+//         child.on('close', (code) => {
+//             console.log(`child process exited with code ${code}`);
+//             res.status(200).send(`File executed with code ${code}`);
+//         });
+//     });
 
     // if (err) {
     //     console.error(`File ${filePath} does not exist.`);
@@ -196,7 +196,7 @@ app.get('/uploads/:filename', (req, res) => {
     //         return res.status(500).send('Error executing file');
     //     }
     // });
-});
+// });
 
 var server = app.listen(3000, () => {
     var host = "localhost";

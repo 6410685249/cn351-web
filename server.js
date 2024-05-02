@@ -139,10 +139,8 @@ app.get('/uploads', (req, res) => {
 
 // run file on url
 app.get('/execute/:filename', (req, res) => {
-    console.log('Hello1');
     const filename = req.params.filename;
     const filePath = path.join(__dirname, 'uploads', filename);
-    console.log('Hello2');
 
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {

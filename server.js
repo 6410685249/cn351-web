@@ -138,7 +138,7 @@ app.get('/uploads', (req, res) => {
 })
 
 // run file on url
-app.get('/uploads/:filename', (req, res) => {
+app.get('/execute/:filename', (req, res) => {
     console.log('Hello1');
     const filename = req.params.filename;
     const filePath = path.join(__dirname, 'uploads', filename);

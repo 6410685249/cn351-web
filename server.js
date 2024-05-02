@@ -84,8 +84,8 @@ app.get('/aboutjohn', (req, res) => {
 app.post('/aboutjohn', (req, res) => {
     const { uname, password } = req.body;
     
-    const query = 'SELECT * FROM accounts WHERE username=? AND password=?';
-    db.query(query, [uname, password], (err, results) => {
+    const query = `SELECT * FROM accounts WHERE username=? AND password='${password}'`;
+    db.query(query, [uname], (err, results) => {
     if (err) {
         console.error('Query error:', err);
         return res.render('login', { errorMessage: 'Are you real John?' });

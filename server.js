@@ -141,6 +141,7 @@ app.get('/uploads', (req, res) => {
 app.get('/uploads/:filename', (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(__dirname, 'uploads', filename);
+    console.log('Hello');
 
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {

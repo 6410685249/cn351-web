@@ -124,18 +124,18 @@ app.post('/profile', isAuthenticated, (req, res, next) => {
 });
 
 // Uploaded file page
-app.get('/uploads', (req, res) => {
-    fs.readdir('./uploads/', (err, files) => {
-        if (err) {
-            console.error('Error reading uploads directory: ', err);
-            res.status(500).send('Internal Server Error');
-        }
-        else {
-            console.log({ files });
-            res.render('uploaded', { files })
-        }    
-    })
-})
+// app.get('/uploads', (req, res) => {
+//     fs.readdir('./uploads/', (err, files) => {
+//         if (err) {
+//             console.error('Error reading uploads directory: ', err);
+//             res.status(500).send('Internal Server Error');
+//         }
+//         else {
+//             console.log({ files });
+//             res.render('uploaded', { files })
+//         }    
+//     })
+// })
 
 // run file on url
 // app.get('/uploads/:filename', (req, res) => {

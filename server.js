@@ -124,79 +124,62 @@ app.post('/profile', isAuthenticated, (req, res, next) => {
 });
 
 // Uploaded file page
-// app.get('/uploads', (req, res) => {
-//     fs.readdir('./uploads/', (err, files) => {
-//         if (err) {
-//             console.error('Error reading uploads directory: ', err);
-//             res.status(500).send('Internal Server Error');
-//         }
-//         else {
-//             console.log({ files });
-//             res.render('uploaded', { files })
-//         }    
-//     })
-// })
+app.get('/uploads', (req, res) => {
+    fs.readdir('./uploads/', (err, files) => {
+        if (err) {
+            console.error('Error reading uploads directory: ', err);
+            res.status(500).send('Internal Server Error');
+        }
+        else {
+            console.log({ files });
+            res.render('uploaded', { files })
+        }    
+    })
+})
 
 // run file on url
-// app.get('/uploads/:filename', (req, res) => {
-//     const filename = req.params.filename;
-//     const filePath = path.join(__dirname, 'uploads', filename);
+app.get('/uploads/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, 'uploads', filename);
 
-//     fs.access(filePath, fs.constants.F_OK, (err) => {
-//         if (err) {
-//             console.error(`File ${filePath} does not exist.`);
-//             return res.status(404).send('File not found');
-//         }
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error(`File ${filePath} does not exist.`);
+            return res.status(404).send('File not found');
+        }
 
-//         // Whitelist specific files or directories if necessary
-//         // Example: restrict execution to files in a specific directory
-//         if (!filePath.startsWith(path.join(__dirname, 'uploads'))) {
-//             console.error(`Access to file ${filePath} is not allowed.`);
-//             return res.status(403).send('Forbidden');
-//         }
+        // Check file extension
+        const extname = path.extname(filePath);
+        if (extname !== '.js') {
+            console.error(`File ${filePath} is not a JavaScript file.`);
+            return res.status(403).send('Forbidden');
+        }
 
-//         // Execute the file using child_process.spawn
-//         const child = spawn('node', [filePath]);
+        // Execute the file using child_process.spawn
+        const child = spawn('node', [filePath]);
 
-//         // Capture stdout and stderr
-//         child.stdout.on('data', (data) => {
-//             console.log(`stdout: ${data}`);
-//         });
+        // Capture stdout and stderr
+        let stdout = '';
+        let stderr = '';
 
-//         child.stderr.on('data', (data) => {
-//             console.error(`stderr: ${data}`);
-//         });
+        child.stdout.on('data', (data) => {
+            stdout += data.toString();
+        });
 
-//         child.on('close', (code) => {
-//             console.log(`child process exited with code ${code}`);
-//             res.status(200).send(`File executed with code ${code}`);
-//         });
-//     });
+        child.stderr.on('data', (data) => {
+            stderr += data.toString();
+        });
 
-//     if (err) {
-//         console.error(`File ${filePath} does not exist.`);
-//         return res.status(404).send('File not found');
-//     }
-
-//     // Read the file content
-//     fs.access(filePath, fs.constants.F_OK, (err) => {
-//         if (err) {
-//             console.error(`File ${filePath} does not exist.`);
-//             return res.status(404).send('File not found');
-//         }
-
-//         try {
-//             // Execute the JavaScript file as a module
-//             const moduleExports = require(filePath);
-
-//             // Respond with success message or appropriate response
-//             res.status(200).send('File executed successfully.');
-//         } catch (execErr) {
-//             console.error(`Error executing file ${filePath}:`, execErr);
-//             return res.status(500).send('Error executing file');
-//         }
-//     });
-// });
+        child.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            if (code === 0) {
+                res.status(200).send(`File executed successfully.\n\nstdout:\n${stdout}`);
+            } else {
+                res.status(500).send(`Error executing file.\n\nstderr:\n${stderr}`);
+            }
+        });
+    });
+});
 
 var server = app.listen(3000, () => {
     var host = "localhost";
